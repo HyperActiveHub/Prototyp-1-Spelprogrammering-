@@ -14,7 +14,7 @@ public class SwingArmScript : MonoBehaviour
     [SerializeField]
     Transform wheel = null;
     [SerializeField]
-    Vector2 swingAnchor = new Vector2();
+    Transform swingAnchor;
 
     LineRenderer lr;
 
@@ -27,9 +27,9 @@ public class SwingArmScript : MonoBehaviour
     {
         Time.timeScale = timeScale;
 
-        lr.SetPosition(0, swingAnchor);
+        lr.SetPosition(0, (Vector2)(swingAnchor.position));
 
-        Vector2 offset = wheel.InverseTransformPoint(wheel.position);
-        lr.SetPosition(1, offset);
+       // Vector2 offset = joint.attachedRigidbody.transform.position;
+        lr.SetPosition(1, (Vector2)wheel.position);
     }
 }
