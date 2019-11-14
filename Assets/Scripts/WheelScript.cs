@@ -25,7 +25,7 @@ public class WheelScript : MonoBehaviour
 
     Rigidbody2D rb;
     Rigidbody2D frameRb;
-    WheelJoint2D joint;
+    HingeJoint2D joint;
     JointMotor2D motor;
     CircleCollider2D cirlceColl;
     float throttleTimer = 0;
@@ -34,9 +34,9 @@ public class WheelScript : MonoBehaviour
     void Start()
     {
         cirlceColl = GetComponent<CircleCollider2D>();
-        joint = GetComponent<WheelJoint2D>();
+        joint = GetComponent<HingeJoint2D>();
         rb = GetComponent<Rigidbody2D>();
-        frameRb = GetComponentsInParent<Rigidbody2D>()[1];
+        //frameRb = GetComponentsInParent<Rigidbody2D>()[1];
     }
 
     void Update()
@@ -55,10 +55,11 @@ public class WheelScript : MonoBehaviour
         {
             torque = maxTorque;
         }
-        //motor.maxMotorTorque = maxTorque;
-        //motor.motorSpeed = speed;
-        //joint.motor = motor;
+        motor.maxMotorTorque = maxTorque;
+        motor.motorSpeed = -torque;
+        joint.motor = motor;
 
+        print("Torque: " + torque);
 
         //testing purposes
         if(Input.GetKeyDown(KeyCode.Space))
@@ -67,47 +68,47 @@ public class WheelScript : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
-    {
-        //Use this ray to get the normal of the ground
-        RaycastHit2D[] groundHit = Physics2D.RaycastAll(transform.position, Vector2.down, cirlceColl.bounds.extents.y + 0.5f);   //Additional offset for inclines
-        Debug.DrawRay(transform.position, Vector2.down, Color.red);
+    //private void FixedUpdate()
+    //{
+    //    //Use this ray to get the normal of the ground
+    //    RaycastHit2D[] groundHit = Physics2D.RaycastAll(transform.position, Vector2.down, cirlceColl.bounds.extents.y + 0.5f);   //Additional offset for inclines
+    //    Debug.DrawRay(transform.position, Vector2.down, Color.red);
 
-        float distToNearest = 10;
-        Vector2 groundNormal = Vector2.zero;
+    //    float distToNearest = 10;
+    //    Vector2 groundNormal = Vector2.zero;
 
-        foreach (RaycastHit2D h in groundHit)
-        {
-            if (h.rigidbody == null)
-            {
-                if (h.distance < distToNearest)
-                {
-                    distToNearest = h.distance;
-                    groundNormal = -h.normal;
-                }
-            }
-        }
-
-
-        Vector2 forcePos = (Vector2)frameRb.transform.position + pivotForceOffset;
-
-        float dot = Vector2.Dot(Vector2.right, rb.velocity.normalized);
-
-        //torque or physical rotation of the wheel fucks up suspension.. maybe only rotate sprite according to some relative speed?
-        if (torque != 0)
-            rb.AddTorque(torque);
-        else if (dot > 0)    //if moving right
-        {
-            rb.AddTorque(acceleration * engineBreakMult);
-        }
-        else
-        {
-            rb.AddTorque(-acceleration * engineBreakMult);
-        }
+    //    foreach (RaycastHit2D h in groundHit)
+    //    {
+    //        if (h.rigidbody == null)
+    //        {
+    //            if (h.distance < distToNearest)
+    //            {
+    //                distToNearest = h.distance;
+    //                groundNormal = -h.normal;
+    //            }
+    //        }
+    //    }
 
 
-        frameRb.AddForceAtPosition((-groundNormal * -torque * rotationDamp) * Vector2.Dot(rb.position.normalized, forcePos.normalized), forcePos, ForceMode2D.Force);
+    //    Vector2 forcePos = (Vector2)frameRb.transform.position + pivotForceOffset;
 
-        Debug.DrawRay(forcePos, (-groundNormal * torque * rotationDamp) * Vector2.Dot(rb.position.normalized, forcePos.normalized), Color.blue);
-    }
+    //    float dot = Vector2.Dot(Vector2.right, rb.velocity.normalized);
+
+    //    //torque or physical rotation of the wheel fucks up suspension.. maybe only rotate sprite according to some relative speed?
+    //    if (torque != 0)
+    //        rb.AddTorque(torque);
+    //    else if (dot > 0)    //if moving right
+    //    {
+    //        rb.AddTorque(acceleration * engineBreakMult);
+    //    }
+    //    else
+    //    {
+    //        rb.AddTorque(-acceleration * engineBreakMult);
+    //    }
+
+
+    //    //frameRb.AddForceAtPosition((-groundNormal * -torque * rotationDamp) * Vector2.Dot(rb.position.normalized, forcePos.normalized), forcePos, ForceMode2D.Force);
+
+    //    //Debug.DrawRay(forcePos, (-groundNormal * torque * rotationDamp) * Vector2.Dot(rb.position.normalized, forcePos.normalized), Color.blue);
+    //}
 }
