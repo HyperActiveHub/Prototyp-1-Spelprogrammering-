@@ -31,12 +31,27 @@ public class WheelScript : MonoBehaviour
     float throttleTimer = 0;
 
     float torque;
+    bool breaking;
+    SpringJoint2D breakSpring;
+    [SerializeField]
+    float timeToStop = 1;
+    //Rigidbody2D otherRb;
     void Start()
     {
         cirlceColl = GetComponent<CircleCollider2D>();
-        joint = GetComponent<HingeJoint2D>();
+
+        if (GetComponent<HingeJoint2D>() != null)
+        {
+            joint = GetComponent<HingeJoint2D>();
+        }
+        //else if (GetComponentInParent<WheelJoint2D>() != null)
+        //{
+        //    joint = GetComponentInParent<WheelJoint2D>();
+        //}
+        else
+            Debug.LogError("joint(motor) wasnt found", this);
+
         rb = GetComponent<Rigidbody2D>();
-        //frameRb = GetComponentsInParent<Rigidbody2D>()[1];
     }
 
     void Update()
@@ -49,9 +64,56 @@ public class WheelScript : MonoBehaviour
         }
         else if (throttleTimer > 0)
             throttleTimer = 0;
+
+
         float currentThrottle = throttleCurve.Evaluate(throttleTimer);
-        torque = input * currentThrottle * -acceleration;
-        if(torque > maxTorque)
+
+        int contactCount = 0;
+
+        //if (input > 0)
+        {
+            torque = input * currentThrottle * -acceleration;
+        }
+
+        if (Input.GetKeyDown(KeyCode.A) && !breaking)
+        {
+            //List<ContactPoint2D> contacts = new List<ContactPoint2D>();
+            //contactCount = cirlceColl.GetContacts(contacts);
+
+            //if (contactCount != 0)
+            {
+                //GameObject breakPoint = GameObject.Find("Swingarm");
+                //breakSpring = breakPoint.AddComponent<SpringJoint2D>();
+                //breakSpring.anchor = breakPoint.transform.InverseTransformPoint(contacts[0].point + new Vector2(0, 0.05f));
+                //breakSpring.connectedAnchor = contacts[0].point;
+                //breakSpring.autoConfigureDistance = false;
+                //breakSpring.frequency = 15;
+                //breakSpring.dampingRatio = 1;
+                //breaking = true;
+
+            }
+        }
+        else if (breaking)
+        {
+            List<ContactPoint2D> contacts = new List<ContactPoint2D>();
+            contactCount = cirlceColl.GetContacts(contacts);
+
+            if (Input.GetKeyUp(KeyCode.A))
+            {
+                breaking = false;
+                Destroy(breakSpring);
+                print("Stopped breaking");
+            }
+            else if (contactCount == 0)
+            {
+                breaking = false;
+                Destroy(breakSpring);
+                print("Released ground");
+            }
+        }
+
+
+        if (torque > maxTorque)
         {
             torque = maxTorque;
         }
@@ -59,10 +121,30 @@ public class WheelScript : MonoBehaviour
         motor.motorSpeed = -torque;
         joint.motor = motor;
 
-        print("Torque: " + torque);
+        //WheelJoint2D wJoint;
+        //joint.TryGetComponent(out wJoint);
+        //if (wJoint != null)
+        //{
+        //    wJoint.motor = motor;
+        //}
+        //else
+        //{
+        //    joint.TryGetComponent<>
+        //}
+
+        //print(joint.motorSpeed);
+
+        //if (Input.GetKey(KeyCode.A))
+        //{
+        //    print("begun breaking");
+        //    //torque = Mathf.MoveTowards(torque, 0,  -torque * Time.deltaTime * timeToStop);
+        //    joint = new JointMotor2D();
+        //    print("Speed: " + joint.motorSpeed);
+        //    rb.velocity = Vector2.zero;
+        //}
 
         //testing purposes
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             frameRb.AddForce(Vector2.down * downForce * frameRb.mass);
         }

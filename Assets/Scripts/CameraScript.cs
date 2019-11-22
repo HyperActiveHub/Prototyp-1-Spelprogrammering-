@@ -9,7 +9,6 @@ public class CameraScript : MonoBehaviour
 
     void Start()
     {
-        followObj = GameObject.Find("Bike_v2").transform;
     }
 
     void Update()
