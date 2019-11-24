@@ -5,7 +5,6 @@ using UnityEngine.Events;
 
 public class TurnScript : MonoBehaviour
 {
-
     public float turnSpeed = 1.5f;
     [SerializeField]
     GameObject drive;
@@ -26,7 +25,6 @@ public class TurnScript : MonoBehaviour
     Vector3 target;
 
     public UnityAction<int> onTurn = delegate { };
-
     
     void Start()
     {
@@ -55,11 +53,12 @@ public class TurnScript : MonoBehaviour
             var temp2 = driveRB.velocity;                               //Switch velocities
             driveRB.velocity = frontRB.velocity;
             frontRB.velocity = temp2;
+
+            onTurn((int)Mathf.Sign(transform.localScale.x));
         }
 
         if (isTurning)
         {
-            onTurn((int)Mathf.Sign(transform.localScale.x));
             bikeSprite.localScale = Vector3.MoveTowards(bikeSprite.localScale, target, turnSpeed * Time.deltaTime);
 
             if (bikeSprite.localScale.x == target.x)
@@ -69,4 +68,3 @@ public class TurnScript : MonoBehaviour
         }
     }
 }
-

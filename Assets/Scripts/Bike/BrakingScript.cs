@@ -100,40 +100,4 @@ public class BrakingScript : MonoBehaviour
         contactPoint = Vector2.zero;
         return false;
     }
-
-    bool IsGrounded(out Vector2 groundNormal)
-    {
-        Vector2 origin = transform.position;
-        groundNormal = Vector2.zero;
-
-        Debug.DrawRay(origin, Vector2.down, Color.red);
-        //Use this ray to get the normal of the ground
-        RaycastHit2D[] groundHit = Physics2D.RaycastAll(origin, Vector2.down, cirlceColl.bounds.extents.y + offsetToGround);
-        float distToNearest = 10;
-
-        foreach (RaycastHit2D h in groundHit)
-        {
-            if (h.transform.GetComponent<BrakingScript>() == null)
-            {
-                if (h.distance < distToNearest)
-                {
-                    distToNearest = h.distance;
-                    groundNormal = -h.normal;
-                }
-            }
-        }
-
-        //Use this ray to check if character is grounded, using the normal vector of the ground to get correct values on inclines aswell.
-        RaycastHit2D[] groundNormalHit = Physics2D.RaycastAll(origin, groundNormal, cirlceColl.bounds.extents.y + offsetToGround);
-        Debug.DrawRay(origin, groundNormal, Color.blue);
-
-        foreach (RaycastHit2D h in groundNormalHit)
-        {
-            if (h.transform.GetComponent<BrakingScript>() == null)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
 }
