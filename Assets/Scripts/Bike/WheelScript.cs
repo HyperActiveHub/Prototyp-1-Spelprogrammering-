@@ -23,7 +23,7 @@ public class WheelScript : MonoBehaviour
 
     private void Awake()
     {
-        transform.parent.GetComponentInChildren<TurnScript>().onTurn += OnTurn;
+        transform.parent.GetComponentInChildren<TurnScript>().onTurn += OnTurn; //Observer - Design pattern
     }
 
     void Start()
@@ -83,6 +83,6 @@ public class WheelScript : MonoBehaviour
 
     private void OnDisable()
     {
-        transform.parent.GetComponentInChildren<TurnScript>().onTurn += OnTurn;
+        transform.parent.GetComponentInChildren<TurnScript>().onTurn -= OnTurn;
     }
 }

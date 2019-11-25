@@ -45,6 +45,9 @@ TagManager:
   - name: Bike
     uniqueID: 3255080469
     locked: 0
+  - name: Bike Forks
+    uniqueID: 2208203479
+    locked: 0
   - name: Terrain
     uniqueID: 2288692169
     locked: 0
@@ -53,7 +56,4 @@ TagManager:
     locked: 0
   - name: Pickup
     uniqueID: 2234153107
-    locked: 0
-  - name: Bike Stretch
-    uniqueID: 2208203479
     locked: 0

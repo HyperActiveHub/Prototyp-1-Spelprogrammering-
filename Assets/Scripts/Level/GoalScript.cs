@@ -4,14 +4,16 @@ using UnityEngine;
 
 public class GoalScript : MonoBehaviour
 {
-    [SerializeField]
-    GoalPickUpScript[] conditions; //new List<GoalPickUpScript>();
-
     //listen for condition completions.. and change sprite to show that the level can be completed.
+
+    bool conditionsMet;
+    SpriteRenderer sprite;
 
     void Start()
     {
-        conditions = FindObjectsOfType<GoalPickUpScript>();
+        GameManagerScript.Instance.Goal = this;
+        sprite = GetComponent<SpriteRenderer>();
+        sprite.color = Color.red;
     }
 
 
@@ -24,25 +26,24 @@ public class GoalScript : MonoBehaviour
     {
         if (collision.transform.parent.CompareTag("Player"))
         {
-            if (AreConditionsMet())
+            if (conditionsMet)
             {
                 Debug.Log("Completed Level.");
+            }
+            else
+            {
+                Debug.LogWarning("You need to complete all the conditions for this level before you can complete it.", this);
             }
         }
         else
             Debug.LogWarning("Object without 'Player' tag collided with Goal Trigger.", this);
     }
 
-    bool AreConditionsMet()
+    public void ConditionsMet()
     {
-        foreach (GoalPickUpScript pickup in conditions)
-        {
-            if (pickup.enabled == true)     //needs testing
-            {
-                return false;
-            }
-        }
-        return true;
+        conditionsMet = true;
+        sprite.color = Color.green;
+        //Change sprite of goal to show that it is possible to complete the level now.
     }
 
 }

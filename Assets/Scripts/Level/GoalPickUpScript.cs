@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class GoalPickUpScript : MonoBehaviour
 {
+    private void Awake()
+    {
+        
+    }
+
     void Start()
     {
         
@@ -18,6 +23,7 @@ public class GoalPickUpScript : MonoBehaviour
     {
         if (collision.transform.parent.CompareTag("Player"))
         {
+            GameManagerScript.Instance.OnPickup(this);
             enabled = false;
             gameObject.SetActive(false);
         }

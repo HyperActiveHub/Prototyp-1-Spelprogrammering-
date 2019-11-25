@@ -24,8 +24,8 @@ public class TurnScript : MonoBehaviour
     public bool isTurning;
     Vector3 target;
 
-    public UnityAction<int> onTurn = delegate { };
-    
+    public UnityAction<int> onTurn = delegate { };  //Null object - Design pattern
+
     void Start()
     {
         onTurn((int)Mathf.Sign(transform.localScale.x));
