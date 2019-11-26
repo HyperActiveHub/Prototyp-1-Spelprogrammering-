@@ -17,9 +17,14 @@ public class ButtonScript : MonoBehaviour
     [SerializeField]
     bool startActive;
 
-    public UnityAction<bool, Object> onPressed = delegate { };
+    public UnityAction<Object> onPressed = delegate { };
     bool toggle;
-    SpriteRenderer sRenderer;
+    protected SpriteRenderer sRenderer;
+
+    protected void Awake()
+    {
+        sRenderer = GetComponent<SpriteRenderer>();
+    }
 
     void Start()
     {
@@ -29,7 +34,6 @@ public class ButtonScript : MonoBehaviour
         }
 
         enabled = false;
-        sRenderer = GetComponent<SpriteRenderer>();
 
         if (dependencies.Count != 0)
         {
@@ -56,66 +60,70 @@ public class ButtonScript : MonoBehaviour
                 }
             }
         }
-        else if(!isToggle)
+        else if (!isToggle)
             startActive = true;
 
-        if(startActive)
+        if (startActive)
         {
-            Activate(true, this);
+            Activate(this);
         }
     }
 
-    protected void Activate(bool onOff, Object o)
+    void Activate(Object o)
     {
-        if(onOff && toggle && isToggle)
+        if (toggle && isToggle)
         {
-            onOff = false;
+            toggle = false;
         }
-        toggle = onOff;
+        else if (!isToggle)
+        {
+            toggle = true;
+        }
+        else
+            toggle = true;
 
-        if (toggle)
+        if (!enabled)
         {
             enabled = true;
             sRenderer.sprite = activatedSprite;
             if (o == this)
-                Debug.Log("Button activated by self", this);
+                Debug.Log(this + " activated by self", this);
             else
-                Debug.Log("Button activated by " + o, this);
+                Debug.Log(this + " activated by " + o, this);
         }
         else if (enabled)
         {
             enabled = false;
             sRenderer.sprite = inactiveSprite;
             if (o == this)
-                Debug.Log("Button deactivated by self", this);
+                Debug.Log(this + " deactivated by self", this);
             else
-                Debug.Log("Button deactivated by " + o, this);
+                Debug.Log(this + " deactivated by " + o, this);
         }
     }
 
-    protected void OnTriggerEnter2D(Collider2D collision)
+    void OnTriggerEnter2D(Collider2D collision)
     {
         if (enabled)
         {
             if (GameManagerScript.isOtherTaggedPlayer(collision.transform, this))
             {
-                onPressed(toggle, this);
+                onPressed(this);
 
                 if (!isToggle)
                 {
-                    foreach(ButtonScript button in dependencies)
+                    foreach (ButtonScript button in dependencies)
                     {
                         button.onPressed -= Activate;
                     }
-                    Debug.Log("Button pressed", this);
+                    Debug.Log(this + " pressed", this);
                 }
                 else
                 {
-                    
-                    Debug.Log("Button toggled (" + toggle + ")", this);
+                    Debug.Log(this + " toggled (" + toggle + ")", this);
                 }
 
-                Activate(false, this);
+                Activate(this);
             }
         }
     }

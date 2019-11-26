@@ -66,10 +66,6 @@ public class WheelScript : MonoBehaviour
             currentThrottle = throttleCurve.Evaluate(throttleTimer);
             torque = Mathf.Clamp01(input) * currentThrottle * acceleration;
 
-            if (torque > maxTorque)
-            {
-                torque = maxTorque;
-            }
             motor.maxMotorTorque = maxTorque;
             motor.motorSpeed = -torque;
             joint.motor = motor;

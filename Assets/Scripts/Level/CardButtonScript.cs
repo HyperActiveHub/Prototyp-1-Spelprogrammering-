@@ -4,18 +4,16 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [RequireComponent(typeof(CircleCollider2D))]
-public class CardButtonScript : MonoBehaviour   //Couldve inhereted from ButtonScript but opted not to
-{                                               //Since it forced the private SerializedFields to be Serialized
+public class CardButtonScript : ButtonScript
+{
     [SerializeField]
-    Sprite activatedSprite;
+    Sprite activatedS;
     [SerializeField]
-    Sprite inactiveSprite;
+    Sprite inactiveSp;
     [SerializeField]
     CardPickUpScript card;
 
-    public UnityAction onPressed = delegate { };
     bool activated;
-    SpriteRenderer sRenderer;
 
     private void OnDrawGizmos()
     {
@@ -24,10 +22,9 @@ public class CardButtonScript : MonoBehaviour   //Couldve inhereted from ButtonS
 
     private void Start()
     {
-        sRenderer = GetComponent<SpriteRenderer>();
-
         if (card != null)
         {
+            sRenderer.sprite = inactiveSp;
             SetColor();
             card.onCardPickup += Activate;
         }
@@ -42,23 +39,24 @@ public class CardButtonScript : MonoBehaviour   //Couldve inhereted from ButtonS
         GetComponent<SpriteRenderer>().color = card.Color;
     }
 
-    protected void Activate()
+    void Activate()
     {
         activated = true;
-        Debug.Log("Colored Button activated", this);
-        sRenderer.sprite = activatedSprite;
+        sRenderer.sprite = activatedS;
     }
 
-    protected void OnTriggerEnter2D(Collider2D collision)
+    void OnTriggerEnter2D(Collider2D collision)
     {
-        if (GameManagerScript.isOtherTaggedPlayer(collision.transform, this))
+        if (enabled)
         {
-            if (activated)
+            if (GameManagerScript.isOtherTaggedPlayer(collision.transform, this))
             {
-                onPressed();
-                Debug.Log("Colored Button pressed.", this);
-                //enabled = false;
-                Destroy(this);
+                if (activated)
+                {
+                    onPressed(this);
+                    enabled = false;
+                    Destroy(this);
+                }
             }
         }
     }

@@ -32,7 +32,6 @@ public class CardPickUpScript : MonoBehaviour
     {
         if(GameManagerScript.isOtherTaggedPlayer(collision.transform, this))
         {
-            Debug.Log("Card picked up", this);
             onCardPickup();
             gameObject.SetActive(false);
         }

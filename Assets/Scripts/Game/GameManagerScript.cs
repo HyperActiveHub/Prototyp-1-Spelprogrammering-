@@ -98,8 +98,6 @@ public class GameManagerScript : MonoBehaviour
 
     public void OnPickup(object o)  //Called by GoalPickUpScript (and possibly other pickups)      //Mediator? - Design pattern
     {
-        Debug.Log("On pickup called from " + o, this);
-
         //Tell the goalScript that an object was picked up, if it is relevant
         if (o.GetType() == typeof(GoalPickUpScript))
         {

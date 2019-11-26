@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlatformScript : MonoBehaviour
 {
-
     [SerializeField]
     List<ButtonScript> buttons = new List<ButtonScript>();
 
@@ -12,10 +11,18 @@ public class PlatformScript : MonoBehaviour
     List<Vector2> movePoints;
     [SerializeField]
     float moveSpeed = 1;
-    //movespeed
-    //more toggles
-    bool toggleMove;
+    [SerializeField]
+    bool isBezier;
+    [SerializeField]
+    bool isLooping;
+    [SerializeField]
     bool isMoving;
+
+    List<Vector2> movePositions = new List<Vector2>();
+    float minDist = 0.5f;
+    int current = 0;
+    float timer = 0;
+
     void Start()
     {
         //Use GameManager to list all buttons and link current platform with that button?
@@ -23,31 +30,90 @@ public class PlatformScript : MonoBehaviour
         {
             button.onPressed += OnActivated;
         }
+
+        foreach (Vector2 point in movePoints)
+        {
+            movePositions.Add(transform.parent.TransformPoint(point));
+        }
+
+        if (isBezier)
+        {
+            if (movePoints.Count != 3)
+            {
+                Debug.LogError("Quadratic Bezier curve needs 3 positions.", this);
+            }
+        }
     }
 
+
+    Vector2 CalcQuadBezierPoint(float t, Vector2 p0, Vector2 p1, Vector2 p2)
+    {
+        //p1 + (1-t)^2 (p0-p1) + t^2 (p2-p1), 0 <= t <= 1
+        return (p1 + Mathf.Pow(1 - t, 2) * (p0 - p1) + Mathf.Pow(t, 2) * (p2 - p1));
+    }
+
+    
     void Update()
     {
-        if(isMoving)
+        if (isMoving)
         {
-            transform.position = Vector2.MoveTowards(transform.position, movePoints[0], moveSpeed * Time.deltaTime);
-            if((Vector2)transform.position == movePoints[0])
+            timer += Time.deltaTime;
+
+            if (isBezier)
             {
-                isMoving = false;
+                float t = Mathf.Clamp01(timer * moveSpeed);
+                Vector2 curvePos = CalcQuadBezierPoint(t, movePositions[0], movePositions[1], movePositions[2]);
+                transform.position = curvePos;
+                if (t == 1)
+                {
+                    if (!isLooping)
+                    {
+                        isMoving = false;
+                        timer = 0;
+                        movePositions.Reverse();
+                    }
+                    else
+                    {
+                        timer = 0;
+                        movePositions.Reverse();
+                    }
+                }
+            }
+            else
+            {
+                transform.position = Vector2.Lerp(transform.position, movePositions[current], timer * moveSpeed * 0.2f);
+
+                float dist = Vector2.Distance(transform.position, movePositions[current]);
+
+                if (dist < minDist)
+                {
+                    if (current == movePositions.Count - 1)
+                    {
+                        if (isLooping)
+                        {
+                            movePositions.Reverse();
+                            current = 0;
+                        }
+                        else
+                        {
+                            isMoving = false;
+                        }
+                    }
+                    else
+                    {
+                        current++;
+                    }
+                }
             }
         }
     }
 
-    void OnActivated(bool toggle, Object o)
+    void OnActivated(Object o)
     {
-        toggleMove = toggle;
         isMoving = true;
-        if (toggleMove == false)    //move backwards..
-        {
-            for(int i = 0; i < movePoints.Count; i++)       
-            {
-                movePoints[i] *= -1;    //temp
-            }
-        }
+        movePositions.Reverse();
+        current = 0;
+
         Debug.Log("Platform activated/moved by " + o, this);
     }
 
