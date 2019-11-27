@@ -4,43 +4,56 @@ using UnityEngine;
 
 public class LeanScript : MonoBehaviour
 {
-    public static LeanScript instance;
-    public float wheelieRange = 60f;
-    public float leanAngle = 20f;
-    public float leanOffset = 40f;
-    public float targetAngle = 300f;
-    public float smoothing = 10f;
-    public float maxRotationSpeed = 30f;
-    public float offBalanceDrag = 100;
-    Rigidbody2D rb;
-    float currentVel;
-    float drag;
+    [SerializeField]
+    float leanTimer = 0.75f;
+    [SerializeField]
+    float leanTorque = 10;
 
-    private void Awake()
-    {
-        instance = this;
-    }
+    Rigidbody2D rb;
+    float timer;
+    bool canLean;
+
+    float lastPressed;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        drag = rb.angularDrag;
+        timer = leanTimer;
     }
 
     void Update()
     {
-        float h = Input.GetAxis("Vertical");
+        float h = Input.GetAxisRaw("Horizontal");
 
-        //transform.eulerAngles = new Vector3(0, 0, Mathf.SmoothDampAngle(transform.eulerAngles.z, targetAngle + (-h * (maxLeanAngle - leanOffset)), ref currentVel, smoothing, maxRotationSpeed));
+        if (timer < leanTimer)
+        {
+            timer += Time.deltaTime;
+        }
+        else
+        {
+            canLean = true;
+        }
 
-        
-        ////if (transform.eulerAngles.z < maxLean && transform.eulerAngles.z > minLean)
-        //{
-        //    rb.angularDrag = drag;
-        //    //transform.rotation = Quaternion.AngleAxis(Mathf.SmoothDampAngle(transform.eulerAngles.z, targetAngle + (-h * Mathf.Abs(leanAngle - leanOffset)), ref currentVel, smoothing, maxRotationSpeed * (1 + Mathf.Abs(h))), Vector3.forward);
-        //}
-        //else
-        //    rb.angularDrag = offBalanceDrag;
+        if(canLean && h != 0)
+        {
+            timer = 0;
+            //lastPressed = h;
+            ////for (int i = 0; i < forceFrames; i++)
+            ////{
+            ////    rb.AddTorque(-h * leanTorque, ForceMode2D.Force);
+            ////}
+            //currentTorque = Mathf.MoveTowards(currentTorque, leanTorque, Time.deltaTime * forceStep);
+            //rb.AddTorque(currentTorque * -lastPressed);
 
+            //if(currentTorque >= leanTorque)
+            //{
+            //    leaning = false;
+            //    print("leaned");
+            //    currentTorque = 0;
+            //}
+
+            rb.AddTorque(leanTorque * -h);
+            canLean = false;
+        }
     }
 }

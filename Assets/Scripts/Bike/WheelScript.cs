@@ -50,7 +50,7 @@ public class WheelScript : MonoBehaviour
     {
         float input = 0;
         if (!isBraking)
-        input = Input.GetAxis("Horizontal");
+        input = Input.GetAxis("Vertical");
 
         float currentThrottle;
 

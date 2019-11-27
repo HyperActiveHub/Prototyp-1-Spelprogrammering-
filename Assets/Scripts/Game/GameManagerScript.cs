@@ -81,10 +81,15 @@ public class GameManagerScript : MonoBehaviour
     {
         //Level stuff
         //Score/time stuff
+        if(AreGoalConditionsMet())
+        {
+            goal.ConditionsMet();
+        }
     }
 
     public void RegisterPickupCondition(GoalPickUpScript o)
     {
+        print("called");
         if (!pickupConditions.Contains(o))
         {
             pickupConditions.Add(o);

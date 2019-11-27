@@ -11,7 +11,7 @@ public class GoalPickUpScript : MonoBehaviour
 
     void Start()
     {
-        
+        GameManagerScript.Instance.RegisterPickupCondition(this);
     }
 
     void Update()
