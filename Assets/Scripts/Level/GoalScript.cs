@@ -43,7 +43,6 @@ public class GoalScript : MonoBehaviour
     {
         conditionsMet = true;
         sprite.color = Color.green;
-        //Change sprite of goal to show that it is possible to complete the level now.
     }
 
 }

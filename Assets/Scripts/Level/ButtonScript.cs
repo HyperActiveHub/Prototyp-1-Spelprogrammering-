@@ -17,7 +17,7 @@ public class ButtonScript : MonoBehaviour
     [SerializeField]
     bool startActive;
 
-    public UnityAction<Object> onPressed = delegate { };
+    public UnityAction<Object> onPressed = delegate { };    //Observer/Observed - Design pattern
     bool toggle;
     protected SpriteRenderer sRenderer;
 

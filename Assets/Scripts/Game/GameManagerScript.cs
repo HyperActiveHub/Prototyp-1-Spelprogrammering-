@@ -79,9 +79,7 @@ public class GameManagerScript : MonoBehaviour
 
     void Start()
     {
-        //Level stuff
-        //Score/time stuff
-        if(AreGoalConditionsMet())
+        if((pickupConditions.Count == 0))
         {
             goal.ConditionsMet();
         }

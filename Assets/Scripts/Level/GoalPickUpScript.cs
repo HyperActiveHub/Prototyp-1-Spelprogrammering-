@@ -6,12 +6,11 @@ public class GoalPickUpScript : MonoBehaviour
 {
     private void Awake()
     {
-        
+        GameManagerScript.Instance.RegisterPickupCondition(this);
     }
 
     void Start()
     {
-        GameManagerScript.Instance.RegisterPickupCondition(this);
     }
 
     void Update()
@@ -23,9 +22,9 @@ public class GoalPickUpScript : MonoBehaviour
     {
         if (collision.transform.parent.CompareTag("Player"))
         {
-            GameManagerScript.Instance.OnPickup(this);
             enabled = false;
             gameObject.SetActive(false);
+            GameManagerScript.Instance.OnPickup(this);  //Order is important, enabled = false must be called before OnPickup.
         }
         else
             Debug.LogWarning("Object without 'Player' tag collided with pickup Trigger.", this);
